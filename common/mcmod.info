@@ -1,0 +1,21 @@
+[
+{
+  "modid": "dapheePeripherals",
+  "name": "daphee's peripherals",
+  "description": "More and more awesome peripherals to be added!",
+  "version": "0.0.1",
+  "url": "",
+  "updateUrl": "",
+  "authorList": [
+    "daphee"
+  ],
+  "credits": "By daphee",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  	"ComputerCraft"
+  ]
+}
+]

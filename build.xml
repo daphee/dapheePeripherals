@@ -1,0 +1,62 @@
+<?xml version="1.0" ?> 
+<project name="Top" default="build">
+
+	<property file="build.properties" prefix="build"/>
+
+	<!-- Delete files which were used in previous build -->
+	<target name="clean">
+		<delete file="${build.dir.development}/mcp/forge/mcp/src/minecraft/mcmod.info" />
+		<delete dir="${build.dir.development}/mcp/forge/mcp/src/minecraft/dan200" />
+		<delete dir="${build.dir.development}/mcp/forge/mcp/src/minecraft/daphee" />
+		<delete dir="${build.dir.development}/mcp/forge/mcp/reobf/minecraft" />
+	</target>
+
+	<!-- Copy your project to MCP-->
+	<target name="prep">
+		<copy todir="${build.dir.development}/mcp/forge/mcp/src/minecraft">
+			<fileset dir="${build.dir.src}/common" />
+		</copy>
+		<copy todir="${build.dir.development}/mcp/forge/mcp/src/minecraft">
+			<fileset dir="${build.dir.development}/src/computercraft_api/api/api/src" />
+		</copy>
+	</target>
+
+	<!-- Recompile and Reobfuscate your project inside /MCP -->
+	<target name="recompile">
+		<exec dir="${build.dir.development}/mcp/forge/mcp" executable="cmd" osfamily="windows">
+			<arg line="/c recompile.bat" />
+		</exec>
+		<exec dir="${build.dir.development}/mcp/forge/mcp" executable="bash" osfamily="unix">
+			<arg line="recompile.sh" />
+		</exec>
+	</target>
+
+	<target name="reobfuscate">
+		<exec dir="${build.dir.development}/mcp/forge/mcp" executable="cmd" osfamily="windows">
+			<arg line="/c reobfuscate_srg.bat" />
+		</exec>
+		<exec dir="${build.dir.development}/mcp/forge/mcp" executable="bash" osfamily="unix">
+			<arg line="reobfuscate_srg.sh" />
+		</exec>
+	</target>
+
+	<!-- THE ACTUAL BUILDING PART -->
+	<!-- The actual build, where we call the targets -->
+	<target name="build">
+		<!-- Prep for the build -->
+		<antcall target="clean" />
+		<antcall target="prep" />
+		<antcall target="recompile" />		
+		<antcall target="reobfuscate" />
+
+		<!-- Build the jar -->
+		<jar destfile="/home/felix/.minecraft/mods/daphee_peripherals.jar">
+			<fileset dir="${build.dir.development}\mcp/forge/mcp\src\minecraft\" includes="mcmod.info" />
+			<fileset dir="${build.dir.development}\mcp/forge/mcp\reobf\minecraft" />
+			<fileset dir="${build.dir.src}/resources" excludes="**/xcf/**" />
+		</jar>
+
+		<!-- Clean up the MCP source now that we are done -->
+		<antcall target="clean" />
+	</target>
+</project>

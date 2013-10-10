@@ -1,0 +1,119 @@
+
+--All credits to Kingdaro
+function class(obj)
+  obj = obj or {}
+  obj.init = obj.init or function() end
+
+  function obj:new(...)
+    local instance = setmetatable({__class = obj}, {__index = obj})
+    return instance, instance:init(...)
+  end
+
+  function obj:extend(t)
+    t = t or {}
+    for k,v in pairs(obj) do
+      if not t[k] then
+        t[k] = v
+      end
+    end
+    return class(t)
+  end
+
+  return setmetatable(obj, {__call = obj.new})
+end
+
+SocketBase = class()
+
+function SocketBase:init(id,p)
+	if id == nil or p == nil then
+		error("Socket(id,peripheral)")
+	end
+	self.id = id
+	self.peripheral = p
+end
+
+function SocketBase:close()
+	self.peripheral.close(self.id)
+end
+
+function SocketBase:write(...)
+	self.peripheral.write(self.id,...)
+end
+
+function SocketBase:writeLine(...)
+	self.peripheral.writeLine(self.id,...)
+end
+
+function SocketBase:read(count)
+	if count == nil then
+		count = 1
+	end
+	self.peripheral.read(self.id,count)
+	event,num_read,read = os.pullEvent("read_"..self.id)
+	return num_read,read
+end
+
+function SocketBase:readLine()
+	self.peripheral.readLine(self.id)
+	event,line = os.pullEvent("read_line_"..self.id)
+	return line
+end
+
+Socket = SocketBase:extend()
+
+function Socket:init(host,port,p)
+	if host == nil or port == nil then
+		error("Socket(host,port,peripheral")
+	end
+	for k,side in pairs(rs.getSides()) do
+		if peripheral.getType(side) == "command" then
+			p = peripheral.wrap(side)
+			break
+		end
+	end
+	if p.socket == nil then
+		error("Can't find peripheral")
+	end
+	self.peripheral = p
+	self.id = p.socket(host,port)
+end
+
+ServerSocketBase = class()
+
+function ServerSocketBase:init(id,p)
+	if id==nil or p==nil then
+		error("_ServerSocket(id,p)")
+	end
+	self.id = id
+	self.peripheral = p
+end
+
+function ServerSocketBase:accept()
+	self.peripheral.accept(self.id)
+	event, id = os.pullEvent("accept_"..self.id)
+	return SocketBase(id,self.peripheral)
+end
+
+function ServerSocketBase:close()
+	self.peripheral.close(self.id)
+end
+
+ServerSocket = ServerSocketBase:extend()
+
+function ServerSocket:init(port,p)
+	if port == nil then
+		error("ServerSocket(port,peripheral")
+	end
+	for k,side in pairs(rs.getSides()) do
+		if peripheral.getType(side) == "command" then
+			p = peripheral.wrap(side)
+			break
+		end
+	end
+	if p.socket == nil then
+		error("Can't find peripheral")
+	end
+
+	self.peripheral = p
+	self.id = p.bind(port)
+end
