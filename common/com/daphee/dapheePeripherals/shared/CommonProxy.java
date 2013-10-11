@@ -2,6 +2,7 @@ package com.daphee.dapheePeripherals.shared;
 
 import net.minecraft.tileentity.TileEntityCommandBlock;
 
+import com.daphee.dapheePeripherals.peripherals.command.CommandBlockPeripheralHandler;
 import com.daphee.lib.Reference;
 
 import dan200.computer.api.ComputerCraftAPI;
