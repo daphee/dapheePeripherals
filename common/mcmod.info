@@ -3,7 +3,7 @@
   "modid": "dapheePeripherals",
   "name": "daphee's peripherals",
   "description": "More and more awesome peripherals to be added!",
-  "version": "0.0.1",
+  "version": "@VERSION@",
   "url": "",
   "updateUrl": "",
   "authorList": [

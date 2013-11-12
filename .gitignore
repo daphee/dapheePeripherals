@@ -1,4 +1,7 @@
 .project
 .classpath
-/bin
+bin/
+build/
+download/
 .settings
+start_mc.py
